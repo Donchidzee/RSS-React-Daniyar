@@ -1,70 +1,62 @@
-import { useState, useEffect } from 'react';
-import { fetchBooksRequest } from './api';
-import { searchBooksRequest } from './api';
-import Book from './interfaces/book';
-import { BookList } from './components/bookList';
+import React from 'react';
+import { fetchBooksRequest } from './Api';
+import { searchBooksRequest } from './Api';
+import BookList from './components/BookList';
 import './App.css';
 
-function App() {
-  const [books, setBooks] = useState<Book[]>([]);
-  const [error, setError] = useState<string | null>(null);
+export default class App extends React.Component {
+  state = { books: [], error: null, searchValue: '' };
 
-  useEffect(() => {
-    async function fetchBooks() {
-      try {
-        const data = await fetchBooksRequest();
-        setBooks(data);
-      } catch (error) {
-        setError((error as Error).message);
-      }
-    }
-    fetchBooks();
-  }, []);
-
-  const [searchValue, setSearchValue] = useState('');
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchValue((event.target as HTMLInputElement).value);
-  };
-
-  async function searchBooks() {
+  async componentDidMount() {
     try {
-      const data = await searchBooksRequest(searchValue);
-      setBooks(data);
-      console.log(books);
+      const fetchedBooks = await fetchBooksRequest();
+      this.setState({ books: fetchedBooks });
     } catch (error) {
-      setError((error as Error).message);
+      this.setState({ error: (error as Error).message });
     }
   }
 
-  const handleKeyClick = (event: React.KeyboardEvent) => {
+  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ searchValue: (event.target as HTMLInputElement).value });
+  };
+
+  async searchBooks() {
+    try {
+      const fetchedBooks = await searchBooksRequest(this.state.searchValue);
+      this.setState({ books: fetchedBooks });
+    } catch (error) {
+      this.setState({ error: (error as Error).message });
+    }
+  }
+
+  handleKeyClick = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
-      searchBooks();
+      this.searchBooks();
     }
   };
-  const handleSearchButtonClick = () => searchBooks();
+  handleSearchButtonClick = () => this.searchBooks();
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  return (
-    <>
-      <div className="search-section">
-        <div className="search-section__container">
-          <input
-            onChange={handleChange}
-            onKeyDown={handleKeyClick}
-            type="text"
-            placeholder="Which book are you looking for?"
-          />
-          <button onClick={handleSearchButtonClick}>Search</button>
+  render() {
+    if (this.state.error) {
+      return <div>Error: {this.state.error}</div>;
+    }
+    return (
+      <>
+        <div className="search-section">
+          <div className="search-section__container">
+            <input
+              onChange={this.handleChange}
+              onKeyDown={this.handleKeyClick}
+              type="text"
+              placeholder="Which book are you looking for?"
+            />
+            <button onClick={this.handleSearchButtonClick}>Search</button>
+          </div>
         </div>
-      </div>
-      <div className="results-section">
-        <BookList books={books} />
-      </div>
-    </>
-  );
+        <div className="results-section">
+          <BookList books={this.state.books} />
+        </div>
+      </>
+    );
+  }
 }
-
-export default App;
