@@ -4,7 +4,7 @@ import BookList from './components/BookList';
 import './App.css';
 
 export default class App extends React.Component {
-  state = { books: [], error: null, searchValue: '' };
+  state = { books: [], error: null, searchValue: '', isLoading: false };
 
   async componentDidMount() {
     const lastSearchedValue = localStorage.getItem('lastSearchedValue');
@@ -36,22 +36,27 @@ export default class App extends React.Component {
   };
 
   async getBooks() {
+    this.setState({ isLoading: true });
     try {
       const fetchedBooks = await fetchBooksRequest();
       this.setState({ books: fetchedBooks });
     } catch (error) {
       this.setState({ error: (error as Error).message });
+    } finally {
+      this.setState({ isLoading: false });
     }
   }
 
   async searchBooks() {
-    console.log(this.state.searchValue);
     localStorage.setItem('lastSearchedValue', this.state.searchValue);
+    this.setState({ isLoading: true });
     try {
       const fetchedBooks = await searchBooksRequest(this.state.searchValue);
       this.setState({ books: fetchedBooks });
     } catch (error) {
       this.setState({ error: (error as Error).message });
+    } finally {
+      this.setState({ isLoading: false });
     }
   }
 
@@ -74,7 +79,7 @@ export default class App extends React.Component {
           </div>
         </div>
         <div className="results-section">
-          <BookList books={this.state.books} />
+          <BookList books={this.state.books} isLoading={this.state.isLoading} />
         </div>
       </>
     );
