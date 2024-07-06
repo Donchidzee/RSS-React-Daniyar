@@ -1,5 +1,6 @@
 import React from 'react';
 import { fetchBooksRequest, searchBooksRequest } from './api';
+import SearchSection from './components/SearchSection';
 import BookList from './components/BookList';
 import './App.css';
 
@@ -67,16 +68,12 @@ export default class App extends React.Component {
     return (
       <>
         <div className="search-section">
-          <div className="search-section__container">
-            <input
-              onChange={this.handleChange}
-              onKeyDown={this.handleKeyClick}
-              value={this.state.searchValue}
-              type="text"
-              placeholder="Which book are you looking for?"
-            />
-            <button onClick={this.handleSearchButtonClick}>Search</button>
-          </div>
+          <SearchSection
+            searchValue={this.state.searchValue}
+            onChange={this.handleChange}
+            onKeyDown={this.handleKeyClick}
+            handleClick={this.handleSearchButtonClick}
+          />
         </div>
         <div className="results-section">
           <BookList books={this.state.books} isLoading={this.state.isLoading} />

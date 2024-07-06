@@ -12,7 +12,6 @@ async function fetchBooksRequest(
     `https://stapi.co/api/v2/rest/book/search?pageNumber=${pagination.pageNumber}&pageSize=${pagination.pageSize}`
   );
   const data = await response.json();
-  console.log(data.books);
   return data.books;
 }
 
@@ -34,7 +33,6 @@ async function searchBooksRequest(
     }
   );
   const data = await response.json();
-  console.log(data.books);
   return data.books;
 }
 
