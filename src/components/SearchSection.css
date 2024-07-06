@@ -4,7 +4,7 @@
   display: flex;
 }
 
-.search-section input {
+.search-section__input {
   width: 400px;
   height: 30px;
   padding: 0 15px;
@@ -14,7 +14,7 @@
   outline: none;
 }
 
-.search-section button {
+.search-section__button {
   display: flex;
   align-items: center;
   font-size: 13px;

@@ -16,10 +16,16 @@ export default class SearchSection extends React.Component<SearchSectionProps> {
           onChange={this.props.onChange}
           onKeyDown={this.props.onKeyDown}
           value={this.props.searchValue}
+          className="search-section__input"
           type="text"
           placeholder="Which book are you looking for?"
         />
-        <button onClick={this.props.handleClick}>Search</button>
+        <button
+          onClick={this.props.handleClick}
+          className="search-section__button"
+        >
+          Search
+        </button>
       </div>
     );
   }

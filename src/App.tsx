@@ -2,10 +2,17 @@ import React from 'react';
 import { fetchBooksRequest, searchBooksRequest } from './api';
 import SearchSection from './components/SearchSection';
 import BookList from './components/BookList';
+import ErrorBoundary from './components/ErrorBoundaries';
+import ErrorTest from './components/ErrorTest';
 import './App.css';
 
 export default class App extends React.Component {
-  state = { books: [], error: null, searchValue: '', isLoading: false };
+  state = {
+    books: [],
+    searchValue: '',
+    isLoading: false,
+    isErrorOccurred: false,
+  };
 
   async componentDidMount() {
     const lastSearchedValue = localStorage.getItem('lastSearchedValue');
@@ -27,7 +34,12 @@ export default class App extends React.Component {
 
   handleSearchButtonClick = () => this.makeRequest();
 
+  fakeError = () => {
+    this.setState({ isErrorOccurred: true });
+  };
+
   makeRequest = () => {
+    this.setState({ searchValue: this.state.searchValue.trim() });
     if (this.state.searchValue == '') {
       this.getBooks();
       localStorage.setItem('lastSearchedValue', '');
@@ -62,11 +74,8 @@ export default class App extends React.Component {
   }
 
   render() {
-    if (this.state.error) {
-      return <div>Error: {this.state.error}</div>;
-    }
     return (
-      <>
+      <ErrorBoundary>
         <div className="search-section">
           <SearchSection
             searchValue={this.state.searchValue}
@@ -74,11 +83,15 @@ export default class App extends React.Component {
             onKeyDown={this.handleKeyClick}
             handleClick={this.handleSearchButtonClick}
           />
+          <button onClick={this.fakeError} className="error-button">
+            Error
+          </button>
         </div>
         <div className="results-section">
           <BookList books={this.state.books} isLoading={this.state.isLoading} />
         </div>
-      </>
+        {this.state.isErrorOccurred && <ErrorTest />}
+      </ErrorBoundary>
     );
   }
 }
