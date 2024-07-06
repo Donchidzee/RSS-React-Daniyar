@@ -1,0 +1,33 @@
+.bookList {
+  width: 100%;
+  padding: 40px;
+  box-sizing: border-box;
+  overflow: scroll !important;
+}
+
+.container {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.container .index {
+  font-size: 18px;
+}
+
+.container h2 {
+  margin: 0;
+  margin-left: 6px;
+  font-size: 18px;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.container .date {
+  padding: 1px 5px;
+  box-sizing: border-box;
+  background-color: #60cccc20;
+  border: 1px solid #60cccc;
+  border-radius: 5px;
+  margin-left: 10px;
+}
