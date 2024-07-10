@@ -56,6 +56,7 @@ export default class App extends React.Component {
     try {
       let fetchedBooks: Book[] = [];
       if (search) {
+        localStorage.setItem('lastSearchedValue', this.state.searchValue);
         fetchedBooks = await searchBooksRequest(this.state.searchValue);
       } else {
         fetchedBooks = await fetchBooksRequest();
