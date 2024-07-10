@@ -4,6 +4,7 @@ import SearchSection from './components/SearchSection';
 import BookList from './components/BookList';
 import ErrorBoundary from './components/ErrorBoundaries';
 import ErrorTest from './components/ErrorTest';
+import Book from './interfaces/book';
 import './App.css';
 
 export default class App extends React.Component {
@@ -43,30 +44,22 @@ export default class App extends React.Component {
   makeRequest = () => {
     this.setState({ searchValue: this.state.searchValue.trim() });
     if (this.state.searchValue == '') {
-      this.getBooks();
+      this.getBooks({ search: false });
       localStorage.setItem('lastSearchedValue', '');
     } else {
-      this.searchBooks();
+      this.getBooks({ search: true });
     }
   };
 
-  async getBooks() {
+  async getBooks({ search = false }: { search: boolean }) {
     this.setState({ isLoading: true });
     try {
-      const fetchedBooks = await fetchBooksRequest();
-      this.setState({ books: fetchedBooks });
-    } catch (error) {
-      this.setState({ error: (error as Error).message });
-    } finally {
-      this.setState({ isLoading: false });
-    }
-  }
-
-  async searchBooks() {
-    localStorage.setItem('lastSearchedValue', this.state.searchValue);
-    this.setState({ isLoading: true });
-    try {
-      const fetchedBooks = await searchBooksRequest(this.state.searchValue);
+      let fetchedBooks: Book[] = [];
+      if (search) {
+        fetchedBooks = await searchBooksRequest(this.state.searchValue);
+      } else {
+        fetchedBooks = await fetchBooksRequest();
+      }
       this.setState({ books: fetchedBooks });
     } catch (error) {
       this.setState({ error: (error as Error).message });
