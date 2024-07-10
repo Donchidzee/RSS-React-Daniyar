@@ -15,7 +15,9 @@ export default class App extends React.Component {
   };
 
   async componentDidMount() {
-    const lastSearchedValue = localStorage.getItem('lastSearchedValue');
+    const lastSearchedValue = localStorage.getItem('lastSearchedValue')
+      ? localStorage.getItem('lastSearchedValue')
+      : '';
     await this.setState({ searchValue: lastSearchedValue });
 
     this.makeRequest();
