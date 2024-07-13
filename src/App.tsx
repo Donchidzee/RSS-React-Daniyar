@@ -1,5 +1,6 @@
 import React from 'react';
-import { fetchBooksRequest, searchBooksRequest } from './api';
+import { useState, useEffect } from 'react';
+import { searchBooksRequest } from './api';
 import SearchSection from './components/SearchSection';
 import BookList from './components/BookList';
 import ErrorBoundary from './components/ErrorBoundaries';
@@ -7,87 +8,79 @@ import ErrorTest from './components/ErrorTest';
 import Book from './interfaces/book';
 import './App.css';
 
-export default class App extends React.Component {
-  state = {
-    books: [],
-    searchValue: '',
-    isLoading: false,
-    isErrorOccurred: false,
-  };
+export default function App() {
+  const [books, setBooks] = useState<Book[]>([]);
+  const [searchValue, setSearchValue] = useState(() => {
+    const lastSearchedValue = localStorage.getItem('lastSearchedValue');
+    return lastSearchedValue || '';
+  });
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState('');
 
-  async componentDidMount() {
-    const lastSearchedValue = localStorage.getItem('lastSearchedValue')
-      ? localStorage.getItem('lastSearchedValue')
-      : '';
-    await this.setState({ searchValue: lastSearchedValue });
-
-    this.makeRequest();
-  }
-
-  handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = (event.target as HTMLInputElement).value;
-    await this.setState({ searchValue: value });
-  };
-
-  handleKeyClick = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      this.makeRequest();
-    }
-  };
-
-  handleSearchButtonClick = () => this.makeRequest();
-
-  fakeError = () => {
-    this.setState({ isErrorOccurred: true });
-  };
-
-  makeRequest = () => {
-    this.setState({ searchValue: this.state.searchValue.trim() });
-    if (this.state.searchValue == '') {
-      this.getBooks({ search: false });
-      localStorage.setItem('lastSearchedValue', '');
-    } else {
-      this.getBooks({ search: true });
-    }
-  };
-
-  async getBooks({ search = false }: { search: boolean }) {
-    this.setState({ isLoading: true });
-    try {
-      let fetchedBooks: Book[] = [];
-      if (search) {
-        localStorage.setItem('lastSearchedValue', this.state.searchValue);
-        fetchedBooks = await searchBooksRequest(this.state.searchValue);
-      } else {
-        fetchedBooks = await fetchBooksRequest();
+  useEffect(() => {
+    async function mountFetch() {
+      setLoading(true);
+      try {
+        const fetchedBooks = await searchBooksRequest(
+          localStorage.getItem('lastSearchedValue') || ''
+        );
+        setBooks(fetchedBooks);
+      } catch (error) {
+        setError((error as Error).message);
+      } finally {
+        setLoading(false);
       }
-      this.setState({ books: fetchedBooks });
-    } catch (error) {
-      this.setState({ error: (error as Error).message });
-    } finally {
-      this.setState({ isLoading: false });
     }
-  }
+    mountFetch();
+  }, []);
 
-  render() {
-    return (
-      <ErrorBoundary>
-        <div className="search-section">
-          <SearchSection
-            searchValue={this.state.searchValue}
-            onChange={this.handleChange}
-            onKeyDown={this.handleKeyClick}
-            handleClick={this.handleSearchButtonClick}
-          />
-          <button onClick={this.fakeError} className="error-button">
-            Error
-          </button>
-        </div>
-        <div className="results-section">
-          <BookList books={this.state.books} isLoading={this.state.isLoading} />
-        </div>
-        {this.state.isErrorOccurred && <ErrorTest />}
-      </ErrorBoundary>
-    );
-  }
+  const searchBooks = async () => {
+    setLoading(true);
+    try {
+      localStorage.setItem('lastSearchedValue', searchValue);
+      const fetchedBooks = await searchBooksRequest(searchValue);
+      setBooks(fetchedBooks);
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = (event.target as HTMLInputElement).value;
+    setSearchValue(value);
+  };
+
+  const handleKeyClick = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      searchBooks();
+    }
+  };
+
+  const handleSearchButtonClick = () => searchBooks();
+
+  const fakeError = () => {
+    setError('Error');
+  };
+
+  return (
+    <ErrorBoundary>
+      <div className="search-section">
+        <SearchSection
+          searchValue={searchValue}
+          onChange={handleChange}
+          onKeyDown={handleKeyClick}
+          handleClick={handleSearchButtonClick}
+        />
+        <button onClick={fakeError} className="error-button">
+          Error
+        </button>
+      </div>
+      <div className="results-section">
+        <BookList books={books} isLoading={loading} />
+      </div>
+      {error && <ErrorTest />}
+    </ErrorBoundary>
+  );
 }
