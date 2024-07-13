@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { searchBooksRequest } from './api';
+import { useLocalStorage } from './converters/useLocalStorage';
 import SearchSection from './components/SearchSection';
 import BookList from './components/BookList';
 import ErrorBoundary from './components/ErrorBoundaries';
@@ -10,10 +11,10 @@ import './App.css';
 
 export default function App() {
   const [books, setBooks] = useState<Book[]>([]);
-  const [searchValue, setSearchValue] = useState(() => {
-    const lastSearchedValue = localStorage.getItem('lastSearchedValue');
-    return lastSearchedValue || '';
-  });
+  const [searchValue, setSearchValue] = useLocalStorage(
+    'lastSearchedValue',
+    ''
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState('');
 
@@ -37,7 +38,6 @@ export default function App() {
   const searchBooks = async () => {
     setLoading(true);
     try {
-      localStorage.setItem('lastSearchedValue', searchValue);
       const fetchedBooks = await searchBooksRequest(searchValue);
       setBooks(fetchedBooks);
     } catch (error) {
