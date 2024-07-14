@@ -1,0 +1,42 @@
+.loader-wrapper {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #fff;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.book-info {
+  position: relative;
+  width: 500px;
+  height: calc(100vh - 70px);
+  padding: 20px 40px;
+  box-sizing: border-box;
+  background-color: #2b2d31;
+}
+
+.close-icon {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  cursor: pointer;
+}

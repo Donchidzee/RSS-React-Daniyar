@@ -15,6 +15,12 @@ async function fetchBooksRequest(
   return data.books;
 }
 
+async function fetchBookRequest(uid: string): Promise<Book> {
+  const response = await fetch(`https://stapi.co/api/v2/rest/book?uid=${uid}`);
+  const data = await response.json();
+  return data.book;
+}
+
 async function searchBooksRequest(
   body: string,
   pagination: Pagination = { pageNumber: 0, pageSize: 40 }
@@ -36,4 +42,4 @@ async function searchBooksRequest(
   return data.books;
 }
 
-export { fetchBooksRequest, searchBooksRequest };
+export { fetchBooksRequest, searchBooksRequest, fetchBookRequest };

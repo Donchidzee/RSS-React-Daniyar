@@ -59,3 +59,20 @@
   border-radius: 5px;
   margin-left: 10px;
 }
+
+.link {
+  color: #ffffff;
+}
+
+.link:hover {
+  color: #1f7c67;
+  opacity: 0.8;
+}
+
+.active {
+  color: #1f7c67;
+}
+
+.pending {
+  color: #1f7c6780;
+}

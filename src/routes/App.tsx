@@ -1,12 +1,13 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { searchBooksRequest } from './api';
-import { useLocalStorage } from './converters/useLocalStorage';
-import SearchSection from './components/SearchSection';
-import BookList from './components/BookList';
-import ErrorBoundary from './components/ErrorBoundaries';
-import ErrorTest from './components/ErrorTest';
-import Book from './interfaces/book';
+import { searchBooksRequest } from '../api';
+import { useLocalStorage } from '../converters/useLocalStorage';
+import { Outlet, useNavigate } from 'react-router-dom';
+import SearchSection from '../components/SearchSection';
+import BookList from '../components/BookList';
+import ErrorBoundary from '../components/ErrorBoundaries';
+import ErrorTest from '../components/ErrorTest';
+import Book from '../interfaces/book';
 import './App.css';
 
 export default function App() {
@@ -17,6 +18,8 @@ export default function App() {
   );
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState('');
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function mountFetch() {
@@ -45,6 +48,10 @@ export default function App() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const closeOutlet = () => {
+    navigate(`/`, { replace: true });
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,7 +85,10 @@ export default function App() {
         </button>
       </div>
       <div className="results-section">
-        <BookList books={books} isLoading={loading} />
+        <BookList books={books} isLoading={loading} onClick={closeOutlet} />
+        <div id="detail">
+          <Outlet />
+        </div>
       </div>
       {error && <ErrorTest />}
     </ErrorBoundary>
