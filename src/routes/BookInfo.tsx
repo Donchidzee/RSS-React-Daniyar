@@ -40,7 +40,7 @@ export default function BookInfo() {
     return <h2>{error}</h2>;
   } else if (loading) {
     return (
-      <div className="loader-wrapper">
+      <div className="loader-wrapper" role="loader">
         <div className="loader"></div>
       </div>
     );

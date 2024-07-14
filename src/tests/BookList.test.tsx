@@ -1,30 +1,42 @@
 import { render, screen } from '@testing-library/react';
-import BookResults from '../components/BookList';
+import BookList from '../components/BookList';
 import { MemoryRouter } from 'react-router-dom';
 
-describe('BookResults Component', () => {
-  test('renders the specified number of cards', () => {
-    const books = [
-      { uid: '1', title: 'Book 1', publishedMonth: 3, publishedYear: 2015 },
-      { uid: '2', title: 'Book 2', publishedMonth: 3, publishedYear: 2015 },
-    ];
+const mockBooks = [
+  { uid: '1', title: 'Book One', publishedMonth: 1, publishedYear: 2020 },
+  { uid: '2', title: 'Book Two', publishedMonth: 2, publishedYear: 2021 },
+];
+
+describe('BookList', () => {
+  test('renders the specified number of books', () => {
     render(
       <MemoryRouter>
-        <BookResults books={books} isLoading={false} onClick={() => {}} />
+        <BookList books={mockBooks} isLoading={false} onClick={vi.fn()} />
       </MemoryRouter>
     );
 
-    const bookElements = screen.getAllByRole('listitem');
-    expect(bookElements).toHaveLength(books.length);
+    const bookItems = screen.getAllByRole('listitem');
+    expect(bookItems).toHaveLength(mockBooks.length);
   });
 
-  test('displays appropriate message if no cards are present', () => {
+  test('displays a message when no books are present', () => {
     render(
       <MemoryRouter>
-        <BookResults books={[]} isLoading={false} onClick={() => {}} />
+        <BookList books={[]} isLoading={false} onClick={vi.fn()} />
       </MemoryRouter>
     );
 
-    expect(screen.getByText('No books found')).toBeInTheDocument();
+    expect(screen.getByText(/No books found/i)).toBeInTheDocument();
+  });
+
+  test('renders relevant book data', () => {
+    render(
+      <MemoryRouter>
+        <BookList books={mockBooks} isLoading={false} onClick={vi.fn()} />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText(/Book One/i)).toBeInTheDocument();
+    expect(screen.getByText(/Book Two/i)).toBeInTheDocument();
   });
 });

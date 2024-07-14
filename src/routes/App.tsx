@@ -96,7 +96,10 @@ export default function App() {
     }
   };
 
-  const handleSearchButtonClick = () => searchBooks();
+  const handleSearchButtonClick = () => {
+    localStorage.setItem('lastSearchedValue', searchValue);
+    searchBooks();
+  };
 
   const fakeError = () => {
     setError('Error');

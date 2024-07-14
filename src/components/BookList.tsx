@@ -25,12 +25,12 @@ export default function BookList(props: BookListProps) {
 
   if (props.isLoading == true) {
     return (
-      <div className="loader-wrapper">
+      <div className="loader-wrapper" role="loader">
         <div className="loader"></div>
       </div>
     );
   } else if (props.books.length == 0) {
-    return <div>No books found</div>;
+    return <div style={{ width: '100%' }}>No books found</div>;
   } else {
     return (
       <div id="sidebar" className="bookList" onClick={props.onClick}>
