@@ -17,6 +17,12 @@ export default function BookList(props: BookListProps) {
     event.stopPropagation();
   };
 
+  const setIndex = (index: number) => {
+    const page = parseInt(searchParams.get('page') || '0');
+    const calculatedIndex = page * 15 + index;
+    return calculatedIndex;
+  };
+
   if (props.isLoading == true) {
     return (
       <div className="loader-wrapper">
@@ -28,7 +34,7 @@ export default function BookList(props: BookListProps) {
       <div id="sidebar" className="bookList" onClick={props.onClick}>
         {props.books.map((book, index) => (
           <div key={book.uid} className="container">
-            <div className="index">{index + 1}.</div>
+            <div className="index">{setIndex(index + 1)}.</div>
             <NavLink
               onClick={handleClick}
               to={`/books/${book.uid}/?page=${parseInt(searchParams.get('page') || '0', 10)}`}

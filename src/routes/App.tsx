@@ -42,7 +42,7 @@ export default function App() {
           localStorage.getItem('lastSearchedValue') || '',
           {
             pageNumber: pageNumber,
-            pageSize: 20,
+            pageSize: 15,
           }
         );
         setBooks(fetchedBooks);
@@ -57,14 +57,14 @@ export default function App() {
   }, [searchParams]);
 
   const searchBooks = async () => {
-    const pageNumber = parseInt(searchParams.get('page') || '0', 10);
-    setPagination((prev) => ({ ...prev, pageNumber: pageNumber }));
+    setPagination((prev) => ({ ...prev, pageNumber: 0 }));
+    setSearchParams({ page: '0' });
 
     setLoading(true);
     try {
       const [fetchedBooks, page] = await searchBooksRequest(searchValue, {
-        pageNumber: pageNumber,
-        pageSize: 20,
+        pageNumber: 0,
+        pageSize: 15,
       });
       setBooks(fetchedBooks);
       setPagination(page);
@@ -80,7 +80,9 @@ export default function App() {
   };
 
   const closeOutlet = () => {
-    navigate(`/`, { replace: true });
+    navigate(`/?page=${parseInt(searchParams.get('page') || '0', 10)}`, {
+      replace: true,
+    });
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,13 +117,15 @@ export default function App() {
       </div>
       <div className="results-section">
         <BookList books={books} isLoading={loading} onClick={closeOutlet} />
-        <div className="pagination-wrapper">
-          <Pagination
-            pageNumber={pagination.pageNumber}
-            totalPages={pagination.totalPages}
-            onPageChange={handlePageChange}
-          />
-        </div>
+        {!loading && books.length && (
+          <div className="pagination-wrapper">
+            <Pagination
+              pageNumber={pagination.pageNumber}
+              totalPages={pagination.totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        )}
         <div id="detail">
           <Outlet />
         </div>

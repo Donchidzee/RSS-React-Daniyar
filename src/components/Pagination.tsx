@@ -1,4 +1,5 @@
 import React from 'react';
+import './Pagination.css';
 
 interface PaginationProps {
   pageNumber: number;
@@ -42,7 +43,11 @@ const Pagination: React.FC<PaginationProps> = ({
         </button>
       );
       if (start > 1) {
-        pageNumbers.push(<span key="ellipsis-start">...</span>);
+        pageNumbers.push(
+          <span key="ellipsis-start" className="ellipsis">
+            ...
+          </span>
+        );
       }
     }
 
@@ -52,13 +57,10 @@ const Pagination: React.FC<PaginationProps> = ({
           key={i}
           onClick={() => handlePageSelect(i)}
           style={{
-            margin: '0 2px',
-            padding: '5px 10px',
-            background: i === pageNumber ? '#007bff' : '#fff',
-            color: i === pageNumber ? '#fff' : '#000',
-            border: '1px solid #ccc',
-            cursor: 'pointer',
+            background: i === pageNumber ? '#5567f0' : '#5567f020',
+            color: i === pageNumber ? '#fff' : '#fff',
           }}
+          className="pagination__button"
         >
           {i + 1}
         </button>
@@ -67,7 +69,11 @@ const Pagination: React.FC<PaginationProps> = ({
 
     if (end < totalPages) {
       if (end < totalPages - 1) {
-        pageNumbers.push(<span key="ellipsis-end">...</span>);
+        pageNumbers.push(
+          <span key="ellipsis-end" className="ellipsis">
+            ...
+          </span>
+        );
       }
       pageNumbers.push(
         <button
@@ -83,11 +89,11 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
+    <div className="pagination">
       <button
         onClick={handlePrevious}
         disabled={pageNumber === 0}
-        style={{ marginRight: '10px' }}
+        className="pagination__first"
       >
         Previous
       </button>
@@ -95,7 +101,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <button
         onClick={handleNext}
         disabled={pageNumber === totalPages - 1}
-        style={{ marginLeft: '10px' }}
+        className="pagination__last"
       >
         Next
       </button>

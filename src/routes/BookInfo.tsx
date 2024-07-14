@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import Book from '../interfaces/book';
 import { fetchBookRequest } from '../api';
 import './BookInfo.css';
@@ -11,6 +11,7 @@ export default function BookInfo() {
   const { bookId } = useParams();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState('');
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,12 +31,14 @@ export default function BookInfo() {
   }, [bookId]);
 
   const closeOutlet = () => {
-    navigate(`/`, { replace: true });
+    navigate(`/?page=${parseInt(searchParams.get('page') || '0', 10)}`, {
+      replace: true,
+    });
   };
 
   if (error) {
     return <h2>{error}</h2>;
-  } else if (loading == true) {
+  } else if (loading) {
     return (
       <div className="loader-wrapper">
         <div className="loader"></div>
