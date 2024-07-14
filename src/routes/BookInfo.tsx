@@ -47,7 +47,7 @@ export default function BookInfo() {
   } else {
     return (
       <div className="book-info">
-        <h2>Book information</h2>
+        <h2 className="title">Book information</h2>
         <p>Name: "{book?.title}"</p>
         <p>
           Date of publishing: {monthConverter(book ? book.publishedMonth : 0)}{' '}
