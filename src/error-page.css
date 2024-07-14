@@ -1,0 +1,19 @@
+.error-page {
+  width: 100%;
+  padding-top: 16%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.error-page h2 {
+  font-size: 120px;
+  margin: 0;
+  padding: 0;
+}
+
+.error-page p {
+  font-size: 30px;
+  margin: 0;
+}

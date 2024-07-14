@@ -1,32 +1,57 @@
-import React from 'react';
 import Book from '../interfaces/book';
-import { monthConverter } from '../converters/monthConverter';
 import './BookList.css';
+import { monthConverter } from '../converters/monthConverter';
+import { useSearchParams } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
-type BookListProps = { books: Book[]; isLoading: boolean };
+type BookListProps = {
+  books: Book[];
+  isLoading: boolean;
+  onClick: React.MouseEventHandler<HTMLDivElement>;
+};
 
-export default class BookList extends React.Component<BookListProps> {
-  render() {
-    if (this.props.isLoading == true) {
-      return (
-        <div className="loader-wrapper">
-          <div className="loader"></div>
-        </div>
-      );
-    } else {
-      return (
-        <div className="bookList">
-          {this.props.books.map((book, index) => (
-            <div key={book.uid} className="container">
-              <div className="index">{index + 1}.</div>
+export default function BookList(props: BookListProps) {
+  const [searchParams] = useSearchParams();
+
+  const handleClick = (event: { stopPropagation: () => void }) => {
+    event.stopPropagation();
+  };
+
+  const setIndex = (index: number) => {
+    const page = parseInt(searchParams.get('page') || '0');
+    const calculatedIndex = page * 15 + index;
+    return calculatedIndex;
+  };
+
+  if (props.isLoading == true) {
+    return (
+      <div className="loader-wrapper" role="loader">
+        <div className="loader"></div>
+      </div>
+    );
+  } else if (props.books.length == 0) {
+    return <div style={{ width: '100%' }}>No books found</div>;
+  } else {
+    return (
+      <div id="sidebar" className="bookList" onClick={props.onClick}>
+        {props.books.map((book, index) => (
+          <div key={book.uid} className="container" role="listitem">
+            <div className="index">{setIndex(index + 1)}.</div>
+            <NavLink
+              onClick={handleClick}
+              to={`/books/${book.uid}/?page=${parseInt(searchParams.get('page') || '0', 10)}`}
+              className={({ isActive, isPending }) =>
+                isActive ? 'link active' : isPending ? 'link pending' : 'link'
+              }
+            >
               <h2>{book.title}</h2>
-              <div className="date">
-                {monthConverter(book.publishedMonth)} {book.publishedYear}
-              </div>
+            </NavLink>
+            <div className="date">
+              {monthConverter(book.publishedMonth)} {book.publishedYear}
             </div>
-          ))}
-        </div>
-      );
-    }
+          </div>
+        ))}
+      </div>
+    );
   }
 }

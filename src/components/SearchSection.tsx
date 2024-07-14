@@ -8,25 +8,20 @@ type SearchSectionProps = {
   handleClick: React.MouseEventHandler<HTMLButtonElement>;
 };
 
-export default class SearchSection extends React.Component<SearchSectionProps> {
-  render() {
-    return (
-      <div className="search-section__container">
-        <input
-          onChange={this.props.onChange}
-          onKeyDown={this.props.onKeyDown}
-          value={this.props.searchValue}
-          className="search-section__input"
-          type="text"
-          placeholder="Which book are you looking for?"
-        />
-        <button
-          onClick={this.props.handleClick}
-          className="search-section__button"
-        >
-          Search
-        </button>
-      </div>
-    );
-  }
+export default function SearchSection(props: SearchSectionProps) {
+  return (
+    <div className="search-section__container">
+      <input
+        onChange={props.onChange}
+        onKeyDown={props.onKeyDown}
+        value={props.searchValue}
+        className="search-section__input"
+        type="text"
+        placeholder="Which book are you looking for?"
+      />
+      <button onClick={props.handleClick} className="search-section__button">
+        Search
+      </button>
+    </div>
+  );
 }
