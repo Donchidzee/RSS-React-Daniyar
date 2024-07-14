@@ -29,11 +29,13 @@ export default function BookList(props: BookListProps) {
         <div className="loader"></div>
       </div>
     );
+  } else if (props.books.length == 0) {
+    return <div>No books found</div>;
   } else {
     return (
       <div id="sidebar" className="bookList" onClick={props.onClick}>
         {props.books.map((book, index) => (
-          <div key={book.uid} className="container">
+          <div key={book.uid} className="container" role="listitem">
             <div className="index">{setIndex(index + 1)}.</div>
             <NavLink
               onClick={handleClick}

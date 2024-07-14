@@ -4,7 +4,7 @@ import Book from '../interfaces/book';
 import { fetchBookRequest } from '../api';
 import './BookInfo.css';
 import { monthConverter } from '../converters/monthConverter';
-import CloseIcon from '/close.svg';
+import CloseIcon from '../assets/close.svg';
 
 export default function BookInfo() {
   const [book, setBook] = useState<Book>();
