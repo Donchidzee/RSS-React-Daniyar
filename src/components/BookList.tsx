@@ -1,6 +1,7 @@
 import Book from '../interfaces/book';
 import './BookList.css';
 import { monthConverter } from '../converters/monthConverter';
+import { useSearchParams } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 
 type BookListProps = {
@@ -10,6 +11,8 @@ type BookListProps = {
 };
 
 export default function BookList(props: BookListProps) {
+  const [searchParams] = useSearchParams();
+
   const handleClick = (event: { stopPropagation: () => void }) => {
     event.stopPropagation();
   };
@@ -28,7 +31,7 @@ export default function BookList(props: BookListProps) {
             <div className="index">{index + 1}.</div>
             <NavLink
               onClick={handleClick}
-              to={`/books/${book.uid}`}
+              to={`/books/${book.uid}/?page=${parseInt(searchParams.get('page') || '0', 10)}`}
               className={({ isActive, isPending }) =>
                 isActive ? 'link active' : isPending ? 'link pending' : 'link'
               }

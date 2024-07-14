@@ -1,12 +1,22 @@
 import Book from './interfaces/book';
 
-interface Pagination {
+interface PaginationParams {
   pageNumber: number;
   pageSize: number;
 }
 
+interface PageInfo {
+  pageNumber: number;
+  pageSize: number;
+  numberOfElements: number;
+  totalElements: number;
+  totalPages: number;
+  firstPage: boolean;
+  lastPage: boolean;
+}
+
 async function fetchBooksRequest(
-  pagination: Pagination = { pageNumber: 1, pageSize: 40 }
+  pagination: PaginationParams = { pageNumber: 1, pageSize: 40 }
 ): Promise<Book[]> {
   const response = await fetch(
     `https://stapi.co/api/v2/rest/book/search?pageNumber=${pagination.pageNumber}&pageSize=${pagination.pageSize}`
@@ -23,8 +33,8 @@ async function fetchBookRequest(uid: string): Promise<Book> {
 
 async function searchBooksRequest(
   body: string,
-  pagination: Pagination = { pageNumber: 0, pageSize: 40 }
-): Promise<Book[]> {
+  pagination: PaginationParams = { pageNumber: 0, pageSize: 20 }
+): Promise<[Book[], PageInfo]> {
   const formBody = new URLSearchParams();
   formBody.append('title', body);
 
@@ -39,7 +49,7 @@ async function searchBooksRequest(
     }
   );
   const data = await response.json();
-  return data.books;
+  return [data.books, data.page];
 }
 
 export { fetchBooksRequest, searchBooksRequest, fetchBookRequest };
