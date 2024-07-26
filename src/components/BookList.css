@@ -76,3 +76,7 @@
 .pending {
   color: #1f7c6780;
 }
+
+.flyout-wrapper {
+  transition: 200ms ease-in-out;
+}

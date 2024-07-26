@@ -5,7 +5,7 @@ interface PaginationParams {
   pageSize: number;
 }
 
-interface PageInfo {
+export interface PageInfo {
   pageNumber: number;
   pageSize: number;
   numberOfElements: number;

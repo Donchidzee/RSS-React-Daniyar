@@ -1,25 +1,31 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import Book from '../interfaces/book';
+import { PageInfo } from '../interfaces/pageInfo';
 
-interface PaginationParams {
-  pageNumber: number;
-  pageSize: number;
-}
+const convertBody = (body: string) => {
+  const formBody = new URLSearchParams();
+  formBody.append('title', body);
+  return formBody;
+};
 
 export const booksApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: 'https://stapi.co/api/v2/rest/book' }),
   endpoints: (builder) => ({
     fetchBook: builder.query({
       query: (uid: string) => `?uid=${uid}`,
+      transformResponse: (response: { book: Book }) => response.book,
     }),
     searchBook: builder.mutation({
-      query: (
-        body: string,
-        pagination: PaginationParams = { pageNumber: 0, pageSize: 15 }
-      ) => ({
-        url: `/search?pageNumber=${pagination.pageNumber}&pageSize=${pagination.pageSize}`,
+      query: ({ body, pagination }) => ({
+        url: `/search?pageNumber=${pagination.pageNumber ? pagination.pageNumber : 0}&pageSize=${pagination.pageSize ? pagination.pageSize : 15}`,
         method: 'POST',
-        body: body,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: convertBody(body),
       }),
+      transformResponse: (response: { books: Book[]; page: PageInfo }) =>
+        response,
     }),
   }),
 });

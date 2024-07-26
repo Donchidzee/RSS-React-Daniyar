@@ -44,40 +44,39 @@ export default function BookInfo() {
     return (
       <div className="book-info">
         <h2 className="title">Book information</h2>
-        <p>Name: "{data.book?.title}"</p>
+        <p>Name: "{data?.title}"</p>
         <p>
-          Date of publishing:{' '}
-          {monthConverter(data.book ? data.book.publishedMonth : 0)}{' '}
-          {data.book?.publishedYear}
+          Date of publishing: {monthConverter(data ? data.publishedMonth : 0)}{' '}
+          {data?.publishedYear}
         </p>
-        <p>Number of pages: {data.book?.numberOfPages}</p>
-        {Boolean(data.book?.authors?.length) && (
+        <p>Number of pages: {data?.numberOfPages}</p>
+        {Boolean(data?.authors?.length) && (
           <p>
             Authors:{' '}
-            {data.book?.authors?.length
-              ? data.book?.authors.map((author: Author) => (
+            {data?.authors?.length
+              ? data?.authors.map((author: Author) => (
                   <span key={author.uid}>{author.name} </span>
                 ))
               : ''}
           </p>
         )}
 
-        {Boolean(data.book?.publishers?.length) && (
+        {Boolean(data?.publishers?.length) && (
           <p>
             Publishers:{' '}
-            {data.book?.publishers?.length
-              ? data.book?.publishers.map((publisher: Publisher) => (
+            {data?.publishers?.length
+              ? data?.publishers.map((publisher: Publisher) => (
                   <span key={publisher.uid}>{publisher.name} </span>
                 ))
               : ''}
           </p>
         )}
 
-        {Boolean(data.book?.characters?.length) && (
+        {Boolean(data?.characters?.length) && (
           <p>
             Characters:{' '}
-            {data.book?.characters
-              ? data.book?.characters.map((character: Character) => (
+            {data?.characters
+              ? data?.characters.map((character: Character) => (
                   <span key={character.uid}>{character.name} </span>
                 ))
               : ''}

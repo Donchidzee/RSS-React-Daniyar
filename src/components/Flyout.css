@@ -1,0 +1,15 @@
+.flyout {
+  display: flex;
+  height: 50px;
+  align-items: center;
+  position: fixed;
+  bottom: 70px;
+}
+
+.flyout p {
+  margin-right: 20px;
+}
+
+.flyout button {
+  margin-right: 20px;
+}

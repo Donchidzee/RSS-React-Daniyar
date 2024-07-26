@@ -1,8 +1,13 @@
+import React from 'react';
 import Book from '../interfaces/book';
 import './BookList.css';
 import { monthConverter } from '../converters/monthConverter';
 import { useSearchParams } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectBook, unselectBook } from '../slices/selectedBooksSlice';
+import { RootState } from '../store';
+import Flyout from './Flyout';
 
 type BookListProps = {
   books: Book[];
@@ -12,8 +17,27 @@ type BookListProps = {
 
 export default function BookList(props: BookListProps) {
   const [searchParams] = useSearchParams();
+  const dispatch = useDispatch();
+  const selectedBooks = useSelector(
+    (state: RootState) => state.selectedBooks.selectedBooks
+  );
 
-  const handleClick = (event: { stopPropagation: () => void }) => {
+  const handleCheckboxChange = (book: Book) => {
+    const isSelected = selectedBooks.some(
+      (selectedBook) => selectedBook.uid === book.uid
+    );
+    if (isSelected) {
+      dispatch(unselectBook(book));
+    } else {
+      dispatch(selectBook(book));
+    }
+  };
+
+  const isBookSelected = (book: Book) => {
+    return selectedBooks.some((selectedBook) => selectedBook.uid === book.uid);
+  };
+
+  const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.stopPropagation();
   };
 
@@ -23,13 +47,13 @@ export default function BookList(props: BookListProps) {
     return calculatedIndex;
   };
 
-  if (props.isLoading == true) {
+  if (props.isLoading) {
     return (
       <div className="loader-wrapper" role="loader">
         <div className="loader"></div>
       </div>
     );
-  } else if (props.books.length == 0) {
+  } else if (props.books.length === 0) {
     return <div style={{ width: '100%' }}>No books found</div>;
   } else {
     return (
@@ -37,6 +61,11 @@ export default function BookList(props: BookListProps) {
         {props.books.map((book, index) => (
           <div key={book.uid} className="container" role="listitem">
             <div className="index">{setIndex(index + 1)}.</div>
+            <input
+              type="checkbox"
+              checked={isBookSelected(book)}
+              onChange={() => handleCheckboxChange(book)}
+            />
             <NavLink
               onClick={handleClick}
               to={`/books/${book.uid}/?page=${parseInt(searchParams.get('page') || '0', 10)}`}
@@ -51,6 +80,9 @@ export default function BookList(props: BookListProps) {
             </div>
           </div>
         ))}
+        <div className="flyout-wrapper">
+          <Flyout />
+        </div>
       </div>
     );
   }
