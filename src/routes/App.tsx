@@ -7,6 +7,8 @@ import ErrorBoundary from '../components/ErrorBoundaries';
 import ErrorTest from '../components/ErrorTest';
 import Pagination from '../components/Pagination';
 import Book from '../interfaces/book';
+import ThemeSelector from '../components/ThemeSelector';
+import { useTheme } from '../contexts/useTheme';
 import './App.css';
 import { useSearchBookMutation } from '../services/booksApi';
 
@@ -28,6 +30,7 @@ export default function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [searchBook, { data, isLoading, error }] = useSearchBookMutation();
+  const { theme } = useTheme();
 
   useEffect(() => {
     const pageNumber = parseInt(searchParams.get('page') || '0', 10);
@@ -100,34 +103,39 @@ export default function App() {
   };
 
   return (
-    <ErrorBoundary>
-      <div className="search-section">
-        <SearchSection
-          searchValue={searchValue}
-          onChange={handleChange}
-          onKeyDown={handleKeyClick}
-          handleClick={handleSearchButtonClick}
-        />
-        <button onClick={fakeError} className="error-button">
-          Error
-        </button>
-      </div>
-      <div className="results-section">
-        <BookList books={books} isLoading={isLoading} onClick={closeOutlet} />
-        {!isLoading && books.length > 0 && (
-          <div className="pagination-wrapper">
-            <Pagination
-              pageNumber={pagination.pageNumber}
-              totalPages={pagination.totalPages}
-              onPageChange={handlePageChange}
-            />
+    <div className={`app ${theme}`}>
+      <ErrorBoundary>
+        <div className={`search-section ${theme}`}>
+          <SearchSection
+            searchValue={searchValue}
+            onChange={handleChange}
+            onKeyDown={handleKeyClick}
+            handleClick={handleSearchButtonClick}
+          />
+          <div className="search-section__actions">
+            <ThemeSelector />
+            <button onClick={fakeError} className="error-button">
+              Error
+            </button>
           </div>
-        )}
-        <div id="detail">
-          <Outlet />
         </div>
-      </div>
-      {(mockError || error) && <ErrorTest />}
-    </ErrorBoundary>
+        <div className="results-section">
+          <BookList books={books} isLoading={isLoading} onClick={closeOutlet} />
+          {!isLoading && books.length > 0 && (
+            <div className="pagination-wrapper">
+              <Pagination
+                pageNumber={pagination.pageNumber}
+                totalPages={pagination.totalPages}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
+          <div id="detail">
+            <Outlet />
+          </div>
+        </div>
+        {(mockError || error) && <ErrorTest />}
+      </ErrorBoundary>
+    </div>
   );
 }

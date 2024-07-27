@@ -34,6 +34,10 @@
   background-color: #2b2d31;
 }
 
+.book-info.light {
+  background-color: #e1e1e1;
+}
+
 .close-icon {
   position: absolute;
   top: 30px;

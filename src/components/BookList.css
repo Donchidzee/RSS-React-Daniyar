@@ -40,6 +40,8 @@
 }
 
 .container .index {
+  min-width: 20px;
+  margin-right: 5px;
   font-size: 18px;
 }
 
@@ -60,8 +62,18 @@
   margin-left: 10px;
 }
 
-.link {
+.container .checkbox {
+  margin-right: 15px;
+  accent-color: #ffffff;
+  cursor: pointer;
+}
+
+.link.dark {
   color: #ffffff;
+}
+
+.link.light {
+  color: #000000;
 }
 
 .link:hover {
@@ -75,8 +87,4 @@
 
 .pending {
   color: #1f7c6780;
-}
-
-.flyout-wrapper {
-  transition: 200ms ease-in-out;
 }

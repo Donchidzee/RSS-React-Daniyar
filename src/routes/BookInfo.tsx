@@ -1,7 +1,8 @@
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useFetchBookQuery } from '../services/booksApi';
-import './BookInfo.css';
+import { useTheme } from '../contexts/useTheme';
 import { monthConverter } from '../converters/monthConverter';
+import './BookInfo.css';
 import CloseIcon from '../assets/close.svg';
 
 interface Author {
@@ -20,6 +21,7 @@ interface Character {
 }
 
 export default function BookInfo() {
+  const { theme } = useTheme();
   const { bookId } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -42,7 +44,7 @@ export default function BookInfo() {
     );
   } else {
     return (
-      <div className="book-info">
+      <div className={`book-info ${theme}`}>
         <h2 className="title">Book information</h2>
         <p>Name: "{data?.title}"</p>
         <p>

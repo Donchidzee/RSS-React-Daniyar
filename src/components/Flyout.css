@@ -13,3 +13,8 @@
 .flyout button {
   margin-right: 20px;
 }
+
+.flyout.light button {
+  color: #3b3b3b;
+  background-color: #e1e1e1;
+}

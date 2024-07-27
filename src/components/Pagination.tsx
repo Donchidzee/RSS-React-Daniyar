@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '../contexts/useTheme';
 import './Pagination.css';
 
 interface PaginationProps {
@@ -12,6 +13,8 @@ const Pagination: React.FC<PaginationProps> = ({
   totalPages,
   onPageChange,
 }) => {
+  const { theme } = useTheme();
+
   const handlePrevious = () => {
     if (pageNumber > 0) {
       onPageChange(pageNumber - 1);
@@ -89,7 +92,7 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <div className="pagination">
+    <div className={`pagination ${theme}`}>
       <button
         onClick={handlePrevious}
         disabled={pageNumber === 0}

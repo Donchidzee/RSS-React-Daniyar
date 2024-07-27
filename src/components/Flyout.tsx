@@ -2,10 +2,12 @@ import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { unselectAllBooks } from '../slices/selectedBooksSlice';
+import { useTheme } from '../contexts/useTheme';
 import Book from '../interfaces/book';
 import './Flyout.css';
 
 const Flyout: React.FC = () => {
+  const { theme } = useTheme();
   const dispatch = useDispatch();
   const selectedBooks = useSelector(
     (state: RootState) => state.selectedBooks.selectedBooks
@@ -48,7 +50,7 @@ const Flyout: React.FC = () => {
   }
 
   return (
-    <div className="flyout">
+    <div className={`flyout ${theme}`}>
       <p>{selectedBooks.length} items are selected</p>
       <button onClick={handleUnselectAll}>Unselect all</button>
       <button onClick={handleDownload}>Download</button>

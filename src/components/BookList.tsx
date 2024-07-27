@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectBook, unselectBook } from '../slices/selectedBooksSlice';
 import { RootState } from '../store';
 import Flyout from './Flyout';
+import { useTheme } from '../contexts/useTheme';
 
 type BookListProps = {
   books: Book[];
@@ -21,6 +22,7 @@ export default function BookList(props: BookListProps) {
   const selectedBooks = useSelector(
     (state: RootState) => state.selectedBooks.selectedBooks
   );
+  const { theme } = useTheme();
 
   const handleCheckboxChange = (book: Book) => {
     const isSelected = selectedBooks.some(
@@ -60,17 +62,22 @@ export default function BookList(props: BookListProps) {
       <div id="sidebar" className="bookList" onClick={props.onClick}>
         {props.books.map((book, index) => (
           <div key={book.uid} className="container" role="listitem">
-            <div className="index">{setIndex(index + 1)}.</div>
             <input
               type="checkbox"
+              className="checkbox"
               checked={isBookSelected(book)}
               onChange={() => handleCheckboxChange(book)}
             />
+            <div className="index">{setIndex(index + 1)}.</div>
             <NavLink
               onClick={handleClick}
               to={`/books/${book.uid}/?page=${parseInt(searchParams.get('page') || '0', 10)}`}
               className={({ isActive, isPending }) =>
-                isActive ? 'link active' : isPending ? 'link pending' : 'link'
+                isActive
+                  ? 'link active'
+                  : isPending
+                    ? 'link pending'
+                    : `link ${theme}`
               }
             >
               <h2>{book.title}</h2>
