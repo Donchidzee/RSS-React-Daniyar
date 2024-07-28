@@ -1,42 +1,62 @@
-import { render, screen } from '@testing-library/react';
-import BookList from '../components/BookList';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import BookList from '../components/BookList';
+import { ThemeProvider } from '../contexts/ThemeContext';
+import { Provider } from 'react-redux';
+import { store } from '../store';
 
-const mockBooks = [
-  { uid: '1', title: 'Book One', publishedMonth: 1, publishedYear: 2020 },
-  { uid: '2', title: 'Book Two', publishedMonth: 2, publishedYear: 2021 },
+const books = [
+  { uid: '1', title: 'React Book', publishedMonth: 5, publishedYear: 2021 },
+  {
+    uid: '2',
+    title: 'JavaScript Book',
+    publishedMonth: 3,
+    publishedYear: 2020,
+  },
 ];
 
-describe('BookList', () => {
-  test('renders the specified number of books', () => {
-    render(
-      <MemoryRouter>
-        <BookList books={mockBooks} isLoading={false} onClick={vi.fn()} />
-      </MemoryRouter>
-    );
+test('renders list of books', () => {
+  render(
+    <Provider store={store}>
+      <ThemeProvider>
+        <MemoryRouter>
+          <BookList books={books} isLoading={false} onClick={() => {}} />
+        </MemoryRouter>
+      </ThemeProvider>
+    </Provider>
+  );
 
-    const bookItems = screen.getAllByRole('listitem');
-    expect(bookItems).toHaveLength(mockBooks.length);
-  });
+  expect(screen.getByText(/React Book/i)).toBeInTheDocument();
+  expect(screen.getByText(/JavaScript Book/i)).toBeInTheDocument();
+});
 
-  test('displays a message when no books are present', () => {
-    render(
-      <MemoryRouter>
-        <BookList books={[]} isLoading={false} onClick={vi.fn()} />
-      </MemoryRouter>
-    );
+test('displays loading state', () => {
+  render(
+    <Provider store={store}>
+      <ThemeProvider>
+        <MemoryRouter>
+          <BookList books={[]} isLoading={true} onClick={() => {}} />
+        </MemoryRouter>
+      </ThemeProvider>
+    </Provider>
+  );
 
-    expect(screen.getByText(/No books found/i)).toBeInTheDocument();
-  });
+  expect(screen.getByRole('loader')).toBeInTheDocument();
+});
 
-  test('renders relevant book data', () => {
-    render(
-      <MemoryRouter>
-        <BookList books={mockBooks} isLoading={false} onClick={vi.fn()} />
-      </MemoryRouter>
-    );
+test('handles book selection', () => {
+  render(
+    <Provider store={store}>
+      <ThemeProvider>
+        <MemoryRouter>
+          <BookList books={books} isLoading={false} onClick={() => {}} />
+        </MemoryRouter>
+      </ThemeProvider>
+    </Provider>
+  );
 
-    expect(screen.getByText(/Book One/i)).toBeInTheDocument();
-    expect(screen.getByText(/Book Two/i)).toBeInTheDocument();
-  });
+  const checkboxes = screen.getAllByRole('checkbox');
+  fireEvent.click(checkboxes[0]);
+
+  expect(checkboxes[0]).toBeChecked();
 });

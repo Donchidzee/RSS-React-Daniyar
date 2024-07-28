@@ -5,7 +5,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { store } from './store';
 import App from './routes/App';
 import BookInfo from './routes/BookInfo';
-import ErrorPage from './error-page';
+import ErrorPage from './ErrorPage';
 import { ThemeProvider } from './contexts/ThemeContext';
 import './index.css';
 

@@ -20,7 +20,7 @@ const Flyout: React.FC = () => {
 
   const generateCsvContent = (books: Book[]) => {
     const csvRows = [
-      ['Title', 'Description', 'Details URL', 'Published Date'],
+      ['Title', 'UID', 'Details URL', 'Published Date'],
       ...books.map((book) => [
         book.title,
         book.uid,
