@@ -1,7 +1,24 @@
 #root {
   width: 100%;
   height: 100vh;
+}
+
+.app {
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+}
+
+.app.light {
+  background-color: #f2f3f5;
+  color: #3b3b3b;
+  color-scheme: light;
+}
+
+.app.dark {
   background-color: hsl(230, 6%, 21%);
+  color: #ffffff;
+  color-scheme: dark;
 }
 
 .search-section {
@@ -12,16 +29,33 @@
   display: flex;
   align-items: start;
   justify-content: space-between;
+}
+
+.search-section.light {
+  border-bottom: 1px solid #e1e1e1;
+}
+
+.search-section.dark {
   border-bottom: 1px solid #1e1f23;
 }
 
+.search-section__actions {
+  display: flex;
+  align-items: center;
+}
+
 .error-button {
+  margin-left: 15px;
   height: 30px;
   display: flex;
   align-items: center;
   font-size: 13px;
   border: 1px solid #e93f33;
   background-color: #e93f3320;
+}
+
+.app.light .error-button {
+  color: #e93f33;
 }
 
 .results-section {

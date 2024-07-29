@@ -1,6 +1,4 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
-import { searchBooksRequest } from '../api';
+import React, { useState, useEffect } from 'react';
 import { useLocalStorage } from '../converters/useLocalStorage';
 import { Outlet, useNavigate, useSearchParams } from 'react-router-dom';
 import SearchSection from '../components/SearchSection';
@@ -9,7 +7,10 @@ import ErrorBoundary from '../components/ErrorBoundaries';
 import ErrorTest from '../components/ErrorTest';
 import Pagination from '../components/Pagination';
 import Book from '../interfaces/book';
+import ThemeSelector from '../components/ThemeSelector';
+import { useTheme } from '../contexts/useTheme';
 import './App.css';
+import { useSearchBookMutation } from '../services/booksApi';
 
 export default function App() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -17,12 +18,10 @@ export default function App() {
     'lastSearchedValue',
     ''
   );
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState('');
   const [pagination, setPagination] = useState({
     pageNumber: 0,
-    pageSize: 20,
-    numberOfElements: 20,
+    pageSize: 15,
+    numberOfElements: 15,
     totalElements: 0,
     totalPages: 0,
     firstPage: true,
@@ -30,48 +29,45 @@ export default function App() {
   });
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [searchBook, { data, isLoading, error }] = useSearchBookMutation();
+  const { theme } = useTheme();
 
   useEffect(() => {
     const pageNumber = parseInt(searchParams.get('page') || '0', 10);
-    setPagination((prev) => ({ ...prev, pageNumber: pageNumber }));
+    setPagination((prev) => ({ ...prev, pageNumber }));
 
     async function mountFetch() {
-      setLoading(true);
       try {
-        const [fetchedBooks, page] = await searchBooksRequest(
-          localStorage.getItem('lastSearchedValue') || '',
-          {
-            pageNumber: pageNumber,
-            pageSize: 15,
-          }
-        );
-        setBooks(fetchedBooks);
-        setPagination(page);
-      } catch (error) {
-        setError((error as Error).message);
-      } finally {
-        setLoading(false);
+        await searchBook({
+          body: localStorage.getItem('lastSearchedValue') || '',
+          pagination: { pageNumber, pageSize: 15 },
+        }).unwrap();
+      } catch (e) {
+        console.error('Failed to fetch books:', e);
       }
     }
+
     mountFetch();
-  }, [searchParams]);
+  }, [searchParams, searchBook]);
+
+  useEffect(() => {
+    if (data) {
+      setBooks(data.books);
+      setPagination(data.page);
+    }
+  }, [data]);
 
   const searchBooks = async () => {
     setPagination((prev) => ({ ...prev, pageNumber: 0 }));
     setSearchParams({ page: '0' });
 
-    setLoading(true);
     try {
-      const [fetchedBooks, page] = await searchBooksRequest(searchValue, {
-        pageNumber: 0,
-        pageSize: 15,
-      });
-      setBooks(fetchedBooks);
-      setPagination(page);
-    } catch (error) {
-      setError((error as Error).message);
-    } finally {
-      setLoading(false);
+      await searchBook({
+        body: searchValue,
+        pagination: { pageNumber: 0, pageSize: 15 },
+      }).unwrap();
+    } catch (e) {
+      console.error('Failed to search books:', e);
     }
   };
 
@@ -86,7 +82,7 @@ export default function App() {
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = (event.target as HTMLInputElement).value;
+    const value = event.target.value;
     setSearchValue(value);
   };
 
@@ -101,39 +97,45 @@ export default function App() {
     searchBooks();
   };
 
+  const [mockError, setMockError] = useState<boolean>(false);
   const fakeError = () => {
-    setError('Error');
+    setMockError(true);
   };
 
   return (
-    <ErrorBoundary>
-      <div className="search-section">
-        <SearchSection
-          searchValue={searchValue}
-          onChange={handleChange}
-          onKeyDown={handleKeyClick}
-          handleClick={handleSearchButtonClick}
-        />
-        <button onClick={fakeError} className="error-button">
-          Error
-        </button>
-      </div>
-      <div className="results-section">
-        <BookList books={books} isLoading={loading} onClick={closeOutlet} />
-        {!loading && books.length && (
-          <div className="pagination-wrapper">
-            <Pagination
-              pageNumber={pagination.pageNumber}
-              totalPages={pagination.totalPages}
-              onPageChange={handlePageChange}
-            />
+    <div className={`app ${theme}`}>
+      <ErrorBoundary>
+        <div className={`search-section ${theme}`}>
+          <SearchSection
+            searchValue={searchValue}
+            onChange={handleChange}
+            onKeyDown={handleKeyClick}
+            handleClick={handleSearchButtonClick}
+          />
+          <div className="search-section__actions">
+            <ThemeSelector />
+            <button onClick={fakeError} className="error-button">
+              Error
+            </button>
           </div>
-        )}
-        <div id="detail">
-          <Outlet />
         </div>
-      </div>
-      {error && <ErrorTest />}
-    </ErrorBoundary>
+        <div className="results-section">
+          <BookList books={books} isLoading={isLoading} onClick={closeOutlet} />
+          {!isLoading && books.length > 0 && (
+            <div className="pagination-wrapper">
+              <Pagination
+                pageNumber={pagination.pageNumber}
+                totalPages={pagination.totalPages}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
+          <div id="detail">
+            <Outlet />
+          </div>
+        </div>
+        {(mockError || error) && <ErrorTest />}
+      </ErrorBoundary>
+    </div>
   );
 }

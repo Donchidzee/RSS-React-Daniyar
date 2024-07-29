@@ -1,34 +1,32 @@
-import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import Book from '../interfaces/book';
-import { fetchBookRequest } from '../api';
-import './BookInfo.css';
+import { useFetchBookQuery } from '../services/booksApi';
+import { useTheme } from '../contexts/useTheme';
 import { monthConverter } from '../converters/monthConverter';
+import './BookInfo.css';
 import CloseIcon from '../assets/close.svg';
 
+interface Author {
+  uid: string;
+  name: string;
+}
+
+interface Publisher {
+  uid: string;
+  name: string;
+}
+
+interface Character {
+  uid: string;
+  name: string;
+}
+
 export default function BookInfo() {
-  const [book, setBook] = useState<Book>();
+  const { theme } = useTheme();
   const { bookId } = useParams();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    async function mountFetch() {
-      try {
-        if (bookId) {
-          const fetchedBook = await fetchBookRequest(bookId);
-          setBook(fetchedBook);
-        }
-      } catch (error) {
-        setError((error as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    }
-    mountFetch();
-  }, [bookId]);
+  const { data, error, isLoading } = useFetchBookQuery(bookId ? bookId : '');
 
   const closeOutlet = () => {
     navigate(`/?page=${parseInt(searchParams.get('page') || '0', 10)}`, {
@@ -37,8 +35,8 @@ export default function BookInfo() {
   };
 
   if (error) {
-    return <h2>{error}</h2>;
-  } else if (loading) {
+    return <h2>{(error as Error).message}</h2>;
+  } else if (isLoading) {
     return (
       <div className="loader-wrapper" role="loader">
         <div className="loader"></div>
@@ -46,41 +44,41 @@ export default function BookInfo() {
     );
   } else {
     return (
-      <div className="book-info">
+      <div className={`book-info ${theme}`}>
         <h2 className="title">Book information</h2>
-        <p>Name: "{book?.title}"</p>
+        <p>Name: "{data?.title}"</p>
         <p>
-          Date of publishing: {monthConverter(book ? book.publishedMonth : 0)}{' '}
-          {book?.publishedYear}
+          Date of publishing: {monthConverter(data ? data.publishedMonth : 0)}{' '}
+          {data?.publishedYear}
         </p>
-        <p>Number of pages: {book?.numberOfPages}</p>
-        {Boolean(book?.authors?.length) && (
+        <p>Number of pages: {data?.numberOfPages}</p>
+        {Boolean(data?.authors?.length) && (
           <p>
             Authors:{' '}
-            {book?.authors?.length
-              ? book?.authors.map((author) => (
+            {data?.authors?.length
+              ? data?.authors.map((author: Author) => (
                   <span key={author.uid}>{author.name} </span>
                 ))
               : ''}
           </p>
         )}
 
-        {Boolean(book?.publishers?.length) && (
+        {Boolean(data?.publishers?.length) && (
           <p>
             Publishers:{' '}
-            {book?.publishers?.length
-              ? book?.publishers.map((publisher) => (
+            {data?.publishers?.length
+              ? data?.publishers.map((publisher: Publisher) => (
                   <span key={publisher.uid}>{publisher.name} </span>
                 ))
               : ''}
           </p>
         )}
 
-        {Boolean(book?.characters?.length) && (
+        {Boolean(data?.characters?.length) && (
           <p>
             Characters:{' '}
-            {book?.characters
-              ? book?.characters.map((character) => (
+            {data?.characters
+              ? data?.characters.map((character: Character) => (
                   <span key={character.uid}>{character.name} </span>
                 ))
               : ''}

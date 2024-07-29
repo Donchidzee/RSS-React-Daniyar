@@ -1,58 +1,62 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import SearchSection from '../components/SearchSection';
+import { ThemeProvider } from '../contexts/ThemeContext';
 
-// Mock localStorage
-const mockSetItem = vi.fn();
-const mockGetItem = vi.fn();
-const mockRemoveItem = vi.fn();
-
-beforeEach(() => {
-  Object.defineProperty(window, 'localStorage', {
-    value: {
-      setItem: mockSetItem,
-      getItem: mockGetItem,
-      removeItem: mockRemoveItem,
-    },
-    writable: true,
-  });
-});
-
-describe('SearchSection', () => {
-  const handleClick = vi.fn();
-
-  test('saves the entered value to local storage on search button click', () => {
-    render(
+test('renders search input and button', () => {
+  render(
+    <ThemeProvider>
       <SearchSection
         searchValue=""
-        onChange={vi.fn((e) => {
-          localStorage.setItem('lastSearchedValue', e.target.value);
-        })}
-        onKeyDown={vi.fn()}
-        handleClick={handleClick}
+        onChange={() => {}}
+        onKeyDown={() => {}}
+        handleClick={() => {}}
       />
-    );
+    </ThemeProvider>
+  );
 
-    const input = screen.getByPlaceholderText(
-      /Which book are you looking for?/i
-    );
+  expect(
+    screen.getByPlaceholderText(/Which book are you looking for?/i)
+  ).toBeInTheDocument();
+  expect(screen.getByText(/Search/i)).toBeInTheDocument();
+});
 
-    fireEvent.change(input, { target: { value: 'Test Book' } });
+test('handles search input change', () => {
+  const handleChange = vi.fn();
 
-    expect(mockSetItem).toHaveBeenCalledWith('lastSearchedValue', 'Test Book');
-  });
-
-  test('retrieves the value from local storage upon mounting', () => {
-    mockGetItem.mockReturnValue('Test Book'); // Mock the return value for localStorage.getItem
-
-    render(
+  render(
+    <ThemeProvider>
       <SearchSection
-        searchValue="Test Book"
-        onChange={vi.fn()}
-        onKeyDown={vi.fn()}
+        searchValue=""
+        onChange={handleChange}
+        onKeyDown={() => {}}
+        handleClick={() => {}}
+      />
+    </ThemeProvider>
+  );
+
+  fireEvent.change(
+    screen.getByPlaceholderText(/Which book are you looking for?/i),
+    { target: { value: 'React' } }
+  );
+
+  expect(handleChange).toHaveBeenCalled();
+});
+
+test('handles search button click', () => {
+  const handleClick = vi.fn();
+
+  render(
+    <ThemeProvider>
+      <SearchSection
+        searchValue=""
+        onChange={() => {}}
+        onKeyDown={() => {}}
         handleClick={handleClick}
       />
-    );
+    </ThemeProvider>
+  );
 
-    expect(screen.getByDisplayValue(/Test Book/i)).toBeInTheDocument();
-  });
+  fireEvent.click(screen.getByText(/Search/i));
+
+  expect(handleClick).toHaveBeenCalled();
 });

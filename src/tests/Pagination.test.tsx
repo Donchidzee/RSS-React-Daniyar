@@ -1,18 +1,32 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import Pagination from '../components/Pagination';
-import { MemoryRouter } from 'react-router-dom';
+import { ThemeProvider } from '../contexts/ThemeContext';
 
-describe('Pagination', () => {
-  const onPageChange = vi.fn();
+test('renders pagination component', () => {
+  render(
+    <ThemeProvider>
+      <Pagination pageNumber={0} totalPages={5} onPageChange={() => {}} />
+    </ThemeProvider>
+  );
 
-  test('updates URL query parameter when page changes', () => {
-    render(
-      <MemoryRouter initialEntries={['/?page=0']}>
-        <Pagination pageNumber={0} totalPages={5} onPageChange={onPageChange} />
-      </MemoryRouter>
-    );
+  expect(screen.getByText(/Previous/i)).toBeInTheDocument();
+  expect(screen.getByText(/Next/i)).toBeInTheDocument();
+});
 
-    fireEvent.click(screen.getByText(/Next/i));
-    expect(onPageChange).toHaveBeenCalledWith(1);
-  });
+test('handles page change', () => {
+  const handlePageChange = vi.fn();
+
+  render(
+    <ThemeProvider>
+      <Pagination
+        pageNumber={0}
+        totalPages={5}
+        onPageChange={handlePageChange}
+      />
+    </ThemeProvider>
+  );
+
+  fireEvent.click(screen.getByText(/Next/i));
+
+  expect(handlePageChange).toHaveBeenCalledWith(1);
 });

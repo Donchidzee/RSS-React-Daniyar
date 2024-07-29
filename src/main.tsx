@@ -1,9 +1,12 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
+import { Provider } from 'react-redux';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import App from './routes/App.tsx';
-import BookInfo from './routes/BookInfo.tsx';
-import ErrorPage from './error-page';
+import { store } from './store';
+import App from './routes/App';
+import BookInfo from './routes/BookInfo';
+import ErrorPage from './ErrorPage';
+import { ThemeProvider } from './contexts/ThemeContext';
 import './index.css';
 
 const router = createBrowserRouter([
@@ -20,8 +23,15 @@ const router = createBrowserRouter([
   },
 ]);
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+const container = document.getElementById('root')!;
+const root = createRoot(container);
+
+root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <ThemeProvider>
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </Provider>
   </React.StrictMode>
 );
