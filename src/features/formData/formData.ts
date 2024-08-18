@@ -28,7 +28,7 @@ export const formDataSlice = createSlice({
   name: 'formData',
   initialState,
   reducers: {
-    formDataUpdate(state, action: PayloadAction<FormData>) {
+    formDataUpdate(_, action: PayloadAction<FormData>) {
       return action.payload;
     },
   },

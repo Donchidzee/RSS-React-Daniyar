@@ -1,9 +1,10 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { formDataUpdate } from '../features/formData/formData';
 import './form.css';
+import { RootState } from '../app/store';
 
 const UncontrolledComponentsForm: React.FC = () => {
   const dispatch = useDispatch();
@@ -11,6 +12,7 @@ const UncontrolledComponentsForm: React.FC = () => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFirstSubmit, setIsFirstSubmit] = useState(true);
 
   const nameRef = useRef<HTMLInputElement>(null);
   const ageRef = useRef<HTMLInputElement>(null);
@@ -21,6 +23,8 @@ const UncontrolledComponentsForm: React.FC = () => {
   const tcRef = useRef<HTMLInputElement>(null);
   const pictureRef = useRef<HTMLInputElement>(null);
   const countryRef = useRef<HTMLInputElement>(null);
+
+  const countries = useSelector((state: RootState) => state.countries);
 
   const validationSchema = Yup.object().shape({
     name: Yup.string()
@@ -92,7 +96,9 @@ const UncontrolledComponentsForm: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    setIsFirstSubmit(false);
     setIsSubmitting(true);
+
     const isValid = await validateForm();
 
     if (isValid) {
@@ -125,30 +131,57 @@ const UncontrolledComponentsForm: React.FC = () => {
     setIsSubmitting(false);
   };
 
-  useEffect(() => {
-    if (Object.keys(errors).length === 0) {
-      setIsSubmitting(false);
+  const handleChange = async () => {
+    if (!isFirstSubmit) {
+      await validateForm();
     }
-  }, [errors]);
+  };
 
   return (
     <form className="form" onSubmit={handleSubmit}>
       <div>
         <label htmlFor="name">Name:</label>
-        <input id="name" name="name" type="text" ref={nameRef} />
-        {errors.name && <div className="error">{errors.name}</div>}
+        <input
+          id="name"
+          name="name"
+          type="text"
+          ref={nameRef}
+          onChange={handleChange}
+          autoComplete="name"
+        />
+        {!isFirstSubmit && errors.name && (
+          <div className="error">{errors.name}</div>
+        )}
       </div>
 
       <div>
         <label htmlFor="age">Age:</label>
-        <input id="age" name="age" type="number" ref={ageRef} />
-        {errors.age && <div className="error">{errors.age}</div>}
+        <input
+          id="age"
+          name="age"
+          type="number"
+          ref={ageRef}
+          onChange={handleChange}
+          autoComplete="bday"
+        />
+        {!isFirstSubmit && errors.age && (
+          <div className="error">{errors.age}</div>
+        )}
       </div>
 
       <div>
         <label htmlFor="email">Email:</label>
-        <input id="email" name="email" type="email" ref={emailRef} />
-        {errors.email && <div className="error">{errors.email}</div>}
+        <input
+          id="email"
+          name="email"
+          type="email"
+          ref={emailRef}
+          onChange={handleChange}
+          autoComplete="email"
+        />
+        {!isFirstSubmit && errors.email && (
+          <div className="error">{errors.email}</div>
+        )}
       </div>
 
       <div>
@@ -158,8 +191,12 @@ const UncontrolledComponentsForm: React.FC = () => {
           name="password"
           type="password"
           ref={passwordRef}
+          onChange={handleChange}
+          autoComplete="new-password"
         />
-        {errors.password && <div className="error">{errors.password}</div>}
+        {!isFirstSubmit && errors.password && (
+          <div className="error">{errors.password}</div>
+        )}
       </div>
 
       <div>
@@ -169,25 +206,44 @@ const UncontrolledComponentsForm: React.FC = () => {
           name="confirmPassword"
           type="password"
           ref={confirmPasswordRef}
+          onChange={handleChange}
+          autoComplete="new-password"
         />
-        {errors.confirmPassword && (
+        {!isFirstSubmit && errors.confirmPassword && (
           <div className="error">{errors.confirmPassword}</div>
         )}
       </div>
 
       <div>
         <label htmlFor="gender">Gender:</label>
-        <select id="gender" name="gender" ref={genderRef}>
+        <select
+          id="gender"
+          name="gender"
+          ref={genderRef}
+          onChange={handleChange}
+          autoComplete="sex"
+        >
           <option value="male">Male</option>
           <option value="female">Female</option>
         </select>
-        {errors.gender && <div className="error">{errors.gender}</div>}
+        {!isFirstSubmit && errors.gender && (
+          <div className="error">{errors.gender}</div>
+        )}
       </div>
 
       <div>
         <label htmlFor="tc">Accept Terms and Conditions:</label>
-        <input id="tc" name="tc" type="checkbox" ref={tcRef} />
-        {errors.tc && <div className="error">{errors.tc}</div>}
+        <input
+          id="tc"
+          name="tc"
+          type="checkbox"
+          ref={tcRef}
+          onChange={handleChange}
+          autoComplete="off"
+        />
+        {!isFirstSubmit && errors.tc && (
+          <div className="error">{errors.tc}</div>
+        )}
       </div>
 
       <div>
@@ -198,8 +254,12 @@ const UncontrolledComponentsForm: React.FC = () => {
           type="file"
           ref={pictureRef}
           accept="image/jpeg, image/png"
+          onChange={handleChange}
+          autoComplete="off"
         />
-        {errors.picture && <div className="error">{errors.picture}</div>}
+        {!isFirstSubmit && errors.picture && (
+          <div className="error">{errors.picture}</div>
+        )}
       </div>
 
       <div>
@@ -210,16 +270,24 @@ const UncontrolledComponentsForm: React.FC = () => {
           type="text"
           ref={countryRef}
           list="country-options"
+          onChange={handleChange}
+          autoComplete="country"
         />
         <datalist id="country-options">
-          {/* Populate these options from Redux */}
+          {countries.map((country: string) => (
+            <option key={country} value={country} />
+          ))}
         </datalist>
-        {errors.country && <div className="error">{errors.country}</div>}
+        {!isFirstSubmit && errors.country && (
+          <div className="error">{errors.country}</div>
+        )}
       </div>
 
       <button
         type="submit"
-        disabled={isSubmitting && Object.keys(errors).length > 0}
+        disabled={
+          isSubmitting || (!isFirstSubmit && Object.keys(errors).length > 0)
+        }
       >
         Submit
       </button>

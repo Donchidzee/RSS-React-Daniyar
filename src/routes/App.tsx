@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../app/store';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import './App.css';
 
 const App: React.FC = () => {
@@ -21,6 +21,10 @@ const App: React.FC = () => {
 
   return (
     <div className="app">
+      <Link to={'/uncontrolled-components-form'}>
+        Uncontrolled Components Form
+      </Link>
+      <Link to={'/react-hook-form'}>React Hook Form</Link>
       <h1>Form Data:</h1>
       <div className={`container ${highlight ? 'highlight' : ''}`}>
         <p>Name: {formData.name}</p>

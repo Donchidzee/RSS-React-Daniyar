@@ -6,16 +6,33 @@
 
 .app {
   height: 100%;
+  margin: 20px;
   display: flex;
   flex-direction: column;
 }
-
 .container {
-  transition:
-    background-color 0.5s ease-in-out,
-    border-color 0.5s ease-in-out;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-top: 20px;
 }
 
-.container.highlight {
-  background-color: #7dc77d40;
+.container img {
+  max-width: 100px;
+  max-height: 100px;
+  margin-top: 10px;
+}
+
+.highlight {
+  border-color: green;
+  transition: border-color 0.5s;
+}
+
+a {
+  margin-right: 15px;
+  text-decoration: none;
+  color: blue;
+}
+
+a:hover {
+  text-decoration: underline;
 }
