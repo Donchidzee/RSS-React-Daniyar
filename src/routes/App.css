@@ -1,0 +1,21 @@
+#root {
+  max-width: 1280px;
+  height: 100vh;
+  padding: 2rem;
+}
+
+.app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  transition:
+    background-color 0.5s ease-in-out,
+    border-color 0.5s ease-in-out;
+}
+
+.container.highlight {
+  background-color: #7dc77d40;
+}
